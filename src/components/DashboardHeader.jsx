@@ -46,7 +46,7 @@ const DashboardHeader = ({
           {view === 'mailer'
             ? mailerReport
               ? 'Daily preview · ' + formatDay(mailerReport.reportDate) + ' data · delivery ' + formatDay(mailerReport.deliveryDate)
-              : 'Daily email preview · next-day delivery'}
+              : 'Daily email preview · next-day delivery'
             : formatDataRange(data, fileName)}
         </span>
       </p>
