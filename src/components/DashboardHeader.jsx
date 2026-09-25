@@ -1,4 +1,4 @@
-import { Moon, Sun, UploadCloud } from 'lucide-react';
+import { ArrowLeft, Mail, Moon, Sun, UploadCloud } from 'lucide-react';
 
 const formatDataRange = (data, fileName) => {
   if (!data?.minDateTime || !data?.maxDateTime) return fileName;
@@ -15,6 +15,16 @@ const formatDataRange = (data, fileName) => {
   return `Data from ${format(data.minDateTime)} to ${format(data.maxDateTime)}`;
 };
 
+const formatDay = (value) => {
+  if (!value) return '';
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(value + 'T00:00:00Z'));
+};
+
 const DashboardHeader = ({
   data,
   fileName,
@@ -24,16 +34,47 @@ const DashboardHeader = ({
   onFileUpload,
   onUploadHoverChange,
   onThemeToggle,
+  view,
+  onViewChange,
+  mailerReport,
 }) => (
   <header className="header animate-fade-in delay-1">
     <div>
-      <h1 className="header-title">EMI Dashboard</h1>
+      <h1 className="header-title">{view === 'mailer' ? 'EMI Mailer' : 'EMI Dashboard'}</h1>
       <p className="header-subtitle">
-        <span className="header-data-range">{formatDataRange(data, fileName)}</span>
+        <span className="header-data-range">
+          {view === 'mailer'
+            ? mailerReport
+              ? 'Daily preview · ' + formatDay(mailerReport.reportDate) + ' data · delivery ' + formatDay(mailerReport.deliveryDate)
+              : 'Daily email preview · next-day delivery'}
+            : formatDataRange(data, fileName)}
+        </span>
       </p>
     </div>
 
     <div className="header-actions">
+      {view === 'mailer' ? (
+        <button
+          type="button"
+          onClick={() => onViewChange('dashboard')}
+          className="btn-secondary mailer-nav-button"
+          title="Return to the dashboard"
+        >
+          <ArrowLeft size={16} />
+          <span>Dashboard</span>
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onViewChange('mailer')}
+          className="btn-secondary mailer-nav-button"
+          title="Preview the daily EMI email digest"
+        >
+          <Mail size={16} />
+          <span>EMI Mailer</span>
+          <span className="mailer-nav-badge">PREVIEW</span>
+        </button>
+      )}
       <div
         className="upload-control"
         onMouseEnter={() => onUploadHoverChange(true)}

@@ -3,6 +3,7 @@ import { DollarSign, Star, TrendingUp, LayoutGrid, Sliders } from 'lucide-react'
 import { processCsvData, calculateMetrics, sanitizeCsvForStorage } from './utils/dataProcessor';
 import { generateDemoCsv } from './utils/demoData';
 import DashboardHeader from './components/DashboardHeader';
+import MailerPage from './components/MailerPage';
 import GlobalSlicers from './components/GlobalSlicers';
 import { EmptyDatabaseState, ErrorState, LoadingState, NoMatchingRecordsState } from './components/DashboardStates';
 
@@ -37,6 +38,7 @@ function App() {
   const [showThemeHint, setShowThemeHint] = useState(true);
   const [isUploadHovered, setIsUploadHovered] = useState(false);
   const [filters, setFilters] = useState({ startDate: '', endDate: '' });
+  const [view, setView] = useState('dashboard');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -119,6 +121,59 @@ function App() {
     return calculateMetrics(filteredData);
   }, [data?.rawData, filters.startDate, filters.endDate]);
 
+  const mailerReport = useMemo(() => {
+    if (!data?.rawData?.length) return null;
+
+    const inRangeRows = data.rawData.filter((row) => {
+      if (!row.date || Number.isNaN(row.date.getTime())) return false;
+      const dateKey = row.date.toISOString().slice(0, 10);
+      return (!filters.startDate || dateKey >= filters.startDate)
+        && (!filters.endDate || dateKey <= filters.endDate);
+    });
+
+    if (!inRangeRows.length) return null;
+
+    const reportDate = inRangeRows.reduce((latest, row) => {
+      const dateKey = row.date.toISOString().slice(0, 10);
+      return dateKey > latest ? dateKey : latest;
+    }, '');
+
+    const reportRows = inRangeRows.filter(
+      (row) => row.date.toISOString().slice(0, 10) === reportDate
+    );
+    if (!reportRows.length) return null;
+
+    const sum = (selector) => reportRows.reduce((total, row) => total + selector(row), 0);
+    const converted = sum((row) => row.converted_amount || 0);
+    const interest = sum((row) => row.total_interest_amount
+      || Math.max(0, (row.total_payable_amount || 0) - (row.converted_amount || 0)));
+    const fees = sum((row) => row.processing_fee || 0);
+    const platformCounts = reportRows.reduce((counts, row) => {
+      const platform = row.os_type || 'Unknown';
+      counts[platform] = (counts[platform] || 0) + 1;
+      return counts;
+    }, {});
+    const leadingPlatform = Object.entries(platformCounts)
+      .sort((left, right) => right[1] - left[1])[0];
+
+    const deliveryDate = new Date(reportDate + 'T00:00:00Z');
+    deliveryDate.setUTCDate(deliveryDate.getUTCDate() + 1);
+
+    return {
+      reportDate,
+      deliveryDate: deliveryDate.toISOString().slice(0, 10),
+      bookings: reportRows.length,
+      uniqueUsers: new Set(reportRows.map((row) => row.user_id).filter(Boolean)).size,
+      converted,
+      interest,
+      fees,
+      revenue: interest + fees,
+      averageEmi: sum((row) => row.emi_amount_per_month || 0) / reportRows.length,
+      leadingPlatform: leadingPlatform?.[0] || 'Unknown',
+      leadingPlatformShare: leadingPlatform ? leadingPlatform[1] / reportRows.length : 0,
+    };
+  }, [data?.rawData, filters.startDate, filters.endDate]);
+
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -186,6 +241,9 @@ function App() {
     <div className="app-container">
       <DashboardHeader
         data={data}
+        view={view}
+        onViewChange={setView}
+        mailerReport={mailerReport}
         fileName={fileName}
         theme={theme}
         showThemeHint={showThemeHint}
@@ -204,11 +262,15 @@ function App() {
 
       {!loading && !data && !error && <EmptyDatabaseState />}
 
-      {!loading && data && <GlobalSlicers data={data} filters={filters} setFilters={setFilters} />}
+      {!loading && view === 'mailer' && data && (
+        <MailerPage report={mailerReport} fileName={fileName} />
+      )}
 
-      {!loading && !m && (data?.rawData || data?.minDateStr) && <NoMatchingRecordsState />}
+      {!loading && view === 'dashboard' && data && <GlobalSlicers data={data} filters={filters} setFilters={setFilters} />}
 
-      {!loading && m && (
+      {!loading && view === 'dashboard' && !m && (data?.rawData || data?.minDateStr) && <NoMatchingRecordsState />}
+
+      {!loading && view === 'dashboard' && m && (
         <Suspense fallback={<LoadingState />}>
         <div id="dashboard-content" className="dashboard-content">
           <div className="pdf-page-section">
