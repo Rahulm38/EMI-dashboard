@@ -25,3 +25,22 @@ public/pending-*.json
 *.sln
 *.sw?
 *.csv
+
+# Private inputs and local secrets
+.env
+.env.*
+!.env.example
+.npmrc
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.tsv
+*.xls
+*.xlsx
+*.jsonl
+*.sqlite
+*.sqlite3
+*.db
+scratch/emails/

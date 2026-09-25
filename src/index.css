@@ -2755,3 +2755,41 @@ a:hover {
     width: 84px;
   }
 }
+
+
+/* Repository scope, privacy, and security links */
+.legal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin: 2.5rem auto 1rem;
+  padding: 1rem 0.25rem;
+  border-top: 1px solid var(--border-default);
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.legal-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.legal-footer a {
+  color: var(--text-secondary);
+  text-underline-offset: 3px;
+}
+
+.legal-footer a:focus-visible {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .legal-footer {
+    justify-content: flex-start;
+  }
+}

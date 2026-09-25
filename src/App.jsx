@@ -431,6 +431,17 @@ function App() {
         </div>
         </Suspense>
       )}
+
+      <footer className="legal-footer">
+        <span>Demo only. Use synthetic values; do not upload real personal or customer data.</span>
+        <nav aria-label="Legal and privacy">
+          <a href="https://github.com/Rahulm38/EMI-dashboard/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT license</a>
+          <a href="https://github.com/Rahulm38/EMI-dashboard/blob/main/LICENSE_SCOPE.md" target="_blank" rel="noreferrer">License scope</a>
+          <a href="https://github.com/Rahulm38/EMI-dashboard/blob/main/PRIVACY.md" target="_blank" rel="noreferrer">Privacy</a>
+          <a href="https://github.com/Rahulm38/EMI-dashboard/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noreferrer">Third-party notices</a>
+          <a href="https://github.com/Rahulm38/EMI-dashboard/blob/main/SECURITY.md" target="_blank" rel="noreferrer">Security</a>
+        </nav>
+      </footer>
     </div>
   );
 }

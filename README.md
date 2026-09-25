@@ -1,8 +1,8 @@
 # EMI Dashboard
 
-An open-source analytics dashboard for exploring EMI conversion behaviour, booking trends, customer segments, fee/revenue patterns, repeat usage, and portfolio performance.
+An analytics demo for exploring EMI conversion behaviour, booking trends, customer segments, fee/revenue patterns, repeat usage, and portfolio performance.
 
-The repository is designed as a reusable demo project. It uses synthetic/sample data and is not affiliated with any bank, payment app, or financial institution.
+This is a reusable demo project, not affiliated with a bank, payment app, or financial institution. It uses synthetic values only. Do not upload personal, customer, account, transaction, financial, or production data.
 
 ## What it includes
 
@@ -16,57 +16,44 @@ The repository is designed as a reusable demo project. It uses synthetic/sample 
 - GitHub Pages deployment workflow
 - Optional email-report automation
 
-## Data
+## Data and mailer
 
-The public dashboard should use synthetic or anonymized sample data only. The checked-in email report is a blank template; the helper fills its metrics from the CSV you provide.
+The dashboard starts with synthetic demo values. A selected CSV is read in the browser session. The Mailer tab previews a report; it does not send email from the website.
 
-For the optional email-report helper, provide either:
+The reporting script supports a local CSV path or an EMI_DATA_CSV_URL environment variable. For example:
 
-```bash
-node scripts/emi-dashboard-email-check.mjs prepare --csv-file ./path/to/sample.csv
-```
+    node scripts/emi-dashboard-email-check.mjs prepare --csv-file ./path/to/synthetic-sample.csv
 
-or set a remote CSV source:
+If GMAIL_USER and GMAIL_APP_PASSWORD are set in the local environment, this command can send email to the configured recipient. Check the recipient and use synthetic values before running it.
 
-```bash
-export EMI_DATA_CSV_URL="https://example.com/sample.csv"
-```
+The checked-in GitHub Actions workflow is manually dispatched and currently does not pass a CSV source to the runner. A maintainer must configure a source before an Actions run can send. When configured with a source and Gmail secrets, it processes the CSV on a GitHub-hosted runner, emails a report to the configured recipients, and commits delivery-date metadata to a public state file. Treat that data flow and metadata as public; use synthetic values only.
 
 No production or institution-specific endpoint is hardcoded in this repository.
 
 ## Run locally
 
-```bash
-npm install
-npm run dev
-```
+    npm install
+    npm run dev
 
 Then open the local URL printed by Vite.
 
 ## Build
 
-```bash
-npm run build
-npm run preview
-```
+    npm run build
+    npm run preview
 
 ## Deploy
 
-A GitHub Pages workflow is included under `.github/workflows/deploy-pages.yml`.
-
-The Vite base path is relative, so the built app can be hosted under different repository names or static-hosting paths without changing application code.
-
-## Project structure
-
-```text
-src/
-  components/       Dashboard charts and UI
-  utils/            Data processing, demo data, and theme helpers
-scripts/            Optional reporting utilities
-email-templates/    Blank report template, populated at runtime
-.github/workflows/  Pages deployment and optional automation
-```
+A GitHub Pages workflow is included under .github/workflows/deploy-pages.yml. The Vite base path is relative, so the built app can be hosted under different repository names or static-hosting paths.
 
 ## Privacy
 
-Do not commit real customer data, credentials, private endpoints, production logs, or personally identifiable information. Keep public demos limited to synthetic or safely anonymized datasets.
+The browser dashboard stores the selected theme preference in local storage; it does not store the uploaded CSV there. GitHub Pages logs visitor IP addresses for security. The site requests Inter and Outfit fonts from Google Fonts. See [PRIVACY.md](PRIVACY.md) for details.
+
+## License and third-party material
+
+The [MIT license](LICENSE) applies only to original code and documentation listed in [LICENSE_SCOPE.md](LICENSE_SCOPE.md). Demo output, graphics, icons, fonts, dependencies, and other third-party material are excluded. Read [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) before reusing assets or bundled dependencies. MIT allows reuse of covered material subject to retaining its notice; it does not grant rights to excluded material.
+
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
