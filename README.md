@@ -18,7 +18,7 @@ The repository is designed as a reusable demo project. It uses synthetic/sample 
 
 ## Data
 
-The public dashboard should use synthetic or anonymized sample data only.
+The public dashboard should use synthetic or anonymized sample data only. The checked-in email report is a blank template; the helper fills its metrics from the CSV you provide.
 
 For the optional email-report helper, provide either:
 
@@ -63,7 +63,7 @@ src/
   components/       Dashboard charts and UI
   utils/            Data processing, demo data, and theme helpers
 scripts/            Optional reporting utilities
-email-templates/    Sample email report
+email-templates/    Blank report template, populated at runtime
 .github/workflows/  Pages deployment and optional automation
 ```
 
